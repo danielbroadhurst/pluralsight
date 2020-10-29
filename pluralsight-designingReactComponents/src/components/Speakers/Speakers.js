@@ -10,12 +10,6 @@ const SpeakersComponent = () => {
   const specialMessage = '';
 
   const { records: speakers, status, error, put } = useContext(DataContext);
-  const onFavoriteToggleHandler = async (speakerRec) => {
-    put({
-      ...speakerRec,
-      isFavorite: !speakerRec.isFavorite,
-    });
-  };
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -62,7 +56,7 @@ const SpeakersComponent = () => {
               <Speaker
                 key={speaker.id}
                 {...speaker}
-                onFavoriteToggle={() => onFavoriteToggleHandler(speaker)}
+                put={put}
               />
             ))}
         </div>
