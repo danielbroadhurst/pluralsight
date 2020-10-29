@@ -1,15 +1,22 @@
-import React, { useState, useContext } from 'react';
-import { DataContext, DataProvider } from '../../contexts/DataContext';
+import React, { useState } from 'react';
 
 import SpeakerSearchBar from '../SpeakerSearchBar/SpeakerSearchBar';
 import Speaker from '../Speaker/Speaker';
 
 import { REQUEST_STATUS } from '../../reducers/request';
 
-const SpeakersComponent = () => {
-  const specialMessage = '';
+import withRequest from '../HOCs/withRequest';
+import withSpecialMessage from '../HOCs/withSpecialMessage';
+import { compose } from 'recompose';
 
-  const { records: speakers, status, error, put } = useContext(DataContext);
+const Speakers = ({
+  records: speakers,
+  status,
+  error,
+  put,
+  bgColor,
+  specialMessage,
+}) => {
   const onFavoriteToggleHandler = async (speakerRec) => {
     put({
       ...speakerRec,
@@ -24,7 +31,7 @@ const SpeakersComponent = () => {
   const hasErrored = status === REQUEST_STATUS.ERROR;
 
   return (
-    <div>
+    <div className={bgColor}>
       <SpeakerSearchBar
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -70,13 +77,10 @@ const SpeakersComponent = () => {
     </div>
   );
 };
+// export default withSpecialMessage(
+//   withRequest('http://localhost:4000', 'speakers')(Speakers));
 
-const Speakers = (props) => {
-  return (
-    <DataProvider baseUrl="http://localhost:4000" routeName="speakers">
-      <SpeakersComponent {...props}></SpeakersComponent>
-    </DataProvider>
-  );
-};
-
-export default Speakers;
+export default compose(
+  withRequest('http://localhost:4000', 'speakers'),
+  withSpecialMessage(),
+)(Speakers);

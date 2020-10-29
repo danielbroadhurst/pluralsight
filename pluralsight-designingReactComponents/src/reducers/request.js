@@ -3,16 +3,14 @@ import {
   GET_ALL_FAILURE,
   PUT_SUCCESS,
   PUT_FAILURE,
-} from "../actions/request";
+} from '../actions/request';
 
 export const REQUEST_STATUS = {
-  LOADING: "loading",
-  SUCCESS: "success",
-  ERROR: "error",
+  LOADING: 'loading',
+  SUCCESS: 'success',
+  ERROR: 'error',
 };
-
 const requestReducer = (state, action) => {
-  console.log(state, action);
   switch (action.type) {
     case GET_ALL_SUCCESS: {
       return {
@@ -42,7 +40,7 @@ const requestReducer = (state, action) => {
       };
     case PUT_FAILURE:
       console.log(
-        "PUT_FAILURE: Currently just logging to console without refreshing records list"
+        'PUT_FAILURE: Currently just logging to console without refreshing records list',
       );
       return {
         ...state,
