@@ -9,7 +9,7 @@ try {
   initialCart = [];
 }
 
-const CartContext = React.createContext(null);
+export const CartContext = React.createContext(null);
 
 export function CartProvider(props) {
   const [cart, dispatch] = useReducer(cartReducer, initialCart);
