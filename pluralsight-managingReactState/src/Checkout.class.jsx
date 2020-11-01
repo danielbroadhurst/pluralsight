@@ -22,14 +22,13 @@ export default class Checkout extends React.Component {
     touched: {},
   };
 
-  //Derived State
   isValid() {
     const errors = this.getErrors(this.state.address);
     return Object.keys(errors).length === 0;
   }
 
   handleChange = (e) => {
-    e.persist();
+    e.persist(); // persist the event
     this.setState((state) => {
       return {
         address: {
@@ -55,8 +54,8 @@ export default class Checkout extends React.Component {
         await saveShippingAddress(this.state.address);
         this.props.dispatch({ type: "empty" });
         this.setState({ status: STATUS.COMPLETED });
-      } catch (error) {
-        this.setState({ savedError: error });
+      } catch (e) {
+        this.setState({ saveError: e });
       }
     } else {
       this.setState({ status: STATUS.SUBMITTED });
@@ -65,17 +64,20 @@ export default class Checkout extends React.Component {
 
   getErrors(address) {
     const result = {};
-    if (!address.city) result.city = "City is Required";
-    if (!address.country) result.country = "Country is Required";
+    if (!address.city) result.city = "City is required";
+    if (!address.country) result.country = "Country is required";
     return result;
   }
 
   render() {
     const { status, saveError, touched, address } = this.state;
+
+    //Derived state
     const errors = this.getErrors(this.state.address);
+
     if (saveError) throw saveError;
     if (status === STATUS.COMPLETED) {
-      return <h1>Thanks for Shopping</h1>;
+      return <h1>Thanks for shopping!</h1>;
     }
 
     return (
@@ -122,6 +124,7 @@ export default class Checkout extends React.Component {
               <option value="United Kingdom">United Kingdom</option>
               <option value="USA">USA</option>
             </select>
+
             <p role="alert">
               {(touched.country || status === STATUS.SUBMITTED) &&
                 errors.country}

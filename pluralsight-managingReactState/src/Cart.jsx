@@ -1,7 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import useFetchAll from "./services/useFetchAll";
 import Spinner from "./Spinner";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "./cartContext";
 
 export default function Cart() {
@@ -29,7 +29,7 @@ export default function Cart() {
               aria-label={`Select quantity for ${name} size ${size}`}
               onChange={(e) =>
                 dispatch({
-                  type: "updateQantity",
+                  type: "updateQuantity",
                   sku,
                   quantity: parseInt(e.target.value),
                 })
@@ -59,9 +59,7 @@ export default function Cart() {
       <h1>
         {numItemsInCart === 0
           ? "Your cart is empty"
-          : `${numItemsInCart} Item${
-              numItemsInCart > 1 ? "s" : ""
-            } in My Cart.`}
+          : `${numItemsInCart} Item${numItemsInCart > 1 ? "s" : ""} in My Cart`}
       </h1>
       <ul>{cart.map(renderItem)}</ul>
       {cart.length > 0 && (

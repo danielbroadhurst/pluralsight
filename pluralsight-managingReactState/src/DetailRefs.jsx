@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import PageNotFound from "./PageNotFound";
 import useFetch from "./services/useFetch";
 import Spinner from "./Spinner";
+import PageNotFound from "./PageNotFound";
 
 export default function Detail(props) {
   const { id } = useParams();
@@ -34,12 +34,12 @@ export default function Detail(props) {
           className="btn btn-primary"
           onClick={() => {
             const sku = skuRef.current.value;
-            if (!sku) return alert("Select Size.");
+            if (!sku) return alert("Select size.");
             props.addToCart(id, sku);
             navigate("/cart");
           }}
         >
-          Add to Cart
+          Add to cart
         </button>
       </p>
       <img src={`/images/${product.image}`} alt={product.category} />

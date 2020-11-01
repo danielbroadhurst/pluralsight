@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function useFetchAll(urls) {
   const prevUrls = useRef([]);
@@ -28,8 +28,7 @@ export default function useFetchAll(urls) {
         setError(e);
       })
       .finally(() => setLoading(false));
-    // eslint-disable-next-line
-  }, []);
+  }, [urls]);
 
   return { data, loading, error };
 }

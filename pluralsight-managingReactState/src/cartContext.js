@@ -1,15 +1,15 @@
 import React, { useReducer, useEffect, useContext } from "react";
 import cartReducer from "./cartReducer";
 
+export const CartContext = React.createContext(null);
+
 let initialCart;
 try {
   initialCart = JSON.parse(localStorage.getItem("cart")) ?? [];
 } catch {
-  console.error("The Cart could not be parsed into JSON");
+  console.error("The cart could not be parsed into JSON.");
   initialCart = [];
 }
-
-export const CartContext = React.createContext(null);
 
 export function CartProvider(props) {
   const [cart, dispatch] = useReducer(cartReducer, initialCart);

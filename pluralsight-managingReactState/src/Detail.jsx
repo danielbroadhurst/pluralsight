@@ -1,10 +1,9 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useCart } from "./cartContext";
-import PageNotFound from "./PageNotFound";
 import useFetch from "./services/useFetch";
 import Spinner from "./Spinner";
+import PageNotFound from "./PageNotFound";
+import { useCart } from "./cartContext";
 
 export default function Detail() {
   const { dispatch } = useCart();
@@ -41,7 +40,7 @@ export default function Detail() {
             navigate("/cart");
           }}
         >
-          Add to Cart
+          Add to cart
         </button>
       </p>
       <img src={`/images/${product.image}`} alt={product.category} />

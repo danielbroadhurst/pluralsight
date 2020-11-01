@@ -21,12 +21,13 @@ export default function Checkout() {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [saveError, setSaveError] = useState(null);
   const [touched, setTouched] = useState({});
-  //Derived State
+
+  // Derived state
   const errors = getErrors(address);
   const isValid = Object.keys(errors).length === 0;
 
   function handleChange(e) {
-    e.persist();
+    e.persist(); // persist the event
     setAddress((curAddress) => {
       return {
         ...curAddress,
@@ -50,8 +51,8 @@ export default function Checkout() {
         await saveShippingAddress(address);
         dispatch({ type: "empty" });
         setStatus(STATUS.COMPLETED);
-      } catch (error) {
-        setSaveError(error);
+      } catch (e) {
+        setSaveError(e);
       }
     } else {
       setStatus(STATUS.SUBMITTED);
@@ -60,14 +61,14 @@ export default function Checkout() {
 
   function getErrors(address) {
     const result = {};
-    if (!address.city) result.city = "City is Required";
-    if (!address.country) result.country = "Country is Required";
+    if (!address.city) result.city = "City is required";
+    if (!address.country) result.country = "Country is required";
     return result;
   }
 
   if (saveError) throw saveError;
   if (status === STATUS.COMPLETED) {
-    return <h1>Thanks for Shopping</h1>;
+    return <h1>Thanks for shopping!</h1>;
   }
 
   return (
@@ -114,6 +115,7 @@ export default function Checkout() {
             <option value="United Kingdom">United Kingdom</option>
             <option value="USA">USA</option>
           </select>
+
           <p role="alert">
             {(touched.country || status === STATUS.SUBMITTED) && errors.country}
           </p>
