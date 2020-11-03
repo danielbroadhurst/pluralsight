@@ -1,17 +1,19 @@
 {
-  "name": "pluralsight-serverRenderingReact",
+  "name": "react-server-rendering-demo-2020",
   "version": "1.0.0",
-  "description": "Server Rendered App",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node server",
-    "build": "webpack"
+    "build": "webpack",
+    "server": "babel-node server",
+    "start": "npm run build && npm run server"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.1.2",
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
@@ -22,7 +24,7 @@
     "@babel/preset-react": "^7.7.4",
     "babel-loader": "^8.0.6",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.1",
+    "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"
   }
 }

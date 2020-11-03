@@ -1,6 +1,26 @@
 import React from 'react';
-import ReactDom from 'react-dom';
+import ReactDOM from 'react-dom';
 
 import {App} from './App';
+import {handleModifyVotes} from "../shared/utility";
 
-ReactDom.render(< App />, document.querySelector('#Container'))
+let state = undefined;
+
+fetch("http://localhost:7777/data")
+    .then(data => data.json())
+    .then(json => {
+        state = json;
+        render();
+    })
+
+function handleVote(answerId, increment) {
+    state.answers = handleModifyVotes(state.answers, answerId, increment);
+
+    fetch(`vote/${answerId}/?increment=${increment}`);
+
+    render();
+}
+
+function render() {
+    ReactDOM.hydrate(<App {...state} handleModifyVotes={handleVote} />, document.querySelector('#Container'))
+}
