@@ -27,16 +27,20 @@ describe('DateSlider', () => {
         });
     });
 
-    describe('click', () => {
+    describe('change', () => {
         it('should publish the selected date', () => {
             const fn = jest.fn();
-            const { getByTestId } = render(<DateSlider earth_date="2017-5-13" onDateChanged={fn} />);
+            const { getByTestId } = render(
+                <DateSlider earth_date="2017-5-13" onDateChanged={fn} />
+            );
             
             const input = getByTestId("date-slider");
             fireEvent.change(input, { target: { value: '3877' } });
             
-            expect(fn.mock.calls.length).toBe(1);
-            expect(fn.mock.calls[0][0]).toBe(solToDate(3877));
+            expect(fn.mock.calls).toEqual([
+                [solToDate(3877)]
+            ]);
         });
     });
+
 });

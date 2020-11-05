@@ -8,8 +8,8 @@ describe('CameraSelection', () => {
     describe('rendering', () => {
         let container,select;
         const cameras = {
-            BC: "Big camera",
-            LC: "Little camera"
+            BC: "Big Camera",
+            LC: "Little Camera"
         };
         beforeEach(() => {
             container = document.createElement('div');
@@ -28,12 +28,16 @@ describe('CameraSelection', () => {
         it("should render a select element", () => {
             expect(select).toBeDefined();
         });
-        it("should have 2 options", ()=>{
+        it("should have the correct options", ()=>{
             expect(select.length).toBe(2);
+            expect(select.options[0].text).toBe('Big Camera');
+            expect(select.options[0].value).toBe('BC');
+            expect(select.options[1].text).toBe('Little Camera');
+            expect(select.options[1].value).toBe('LC');
         });
         it("should have LC (Little Camera) selected", ()=>{
             expect(select.value).toBe("LC");
-            expect(select.selectedOptions[0].text).toBe('Little camera');
+            expect(select.selectedOptions[0].text).toBe('Little Camera');
         });
     });
 });
