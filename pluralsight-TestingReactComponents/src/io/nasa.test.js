@@ -25,7 +25,6 @@ describe('nasa', () => {
                 camera: "" 
             });
             expect(result).toBeDefined();
-            console.log(result);
             hasPhotos(result[0].photos); // opportunity
             hasPhotos(result[1].photos); // curiosity
         });
