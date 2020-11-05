@@ -16,7 +16,7 @@ describe('RandomImage', () => {
             );
             await wait(() => {
                 const img = getByAltText('mars rover image');
-                expect(img.src).toMatch(/http:\/\/foo\.com\/cat\.jpg/);
+                expect(img.src).toBe('http://foo.com/cat.jpg');
             });
         });
     });

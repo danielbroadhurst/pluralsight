@@ -52,7 +52,7 @@ describe('ListReducer', () => {
             it('should add the characters to the newItem property', () => {
                 let state = reducer(defaultState, {type: 'newItemChange', value: 'a'});
                 expect(state.newItem).toEqual('a');
-                state =  reducer(state, {type: 'newItemChange', value: 'ab'});
+                state =  reducer(defaultState, {type: 'newItemChange', value: 'ab'});
                 expect(state.newItem).toEqual('ab');
             });
             it('should not change the items array', () => {
