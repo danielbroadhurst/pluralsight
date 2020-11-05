@@ -9,13 +9,20 @@ import { Summary } from "./Summary";
 import { AddModal } from "./AddModal";
 
 function positionCards(cards, width, height) {
+  const updatedCards = {};
+
   Object.values(cards).forEach(
-    card =>
-      (card.position = {
-        left: card.offset.x + width * 0.5,
-        top: card.offset.y + height * 0.5
-      })
+      card =>
+          (updatedCards[card.id] = {
+            ...card,
+            position: {
+              left: card.offset.x + width * 0.5,
+              top: card.offset.y + height * 0.5
+            }
+          })
   );
+
+  return updatedCards;
 }
 
 function parseData() {
@@ -31,12 +38,15 @@ function parseData() {
 function addCard(cards, label) {
   const id = uuid.v4();
 
-  cards[id] = {
-    id,
-    label,
-    offset: {
-      x: 0,
-      y: 0
+  return {
+    ...cards,
+    [id]: {
+      id,
+      label,
+      offset: {
+        x: 0,
+        y: 0
+      }
     }
   };
 }
@@ -49,64 +59,76 @@ function App() {
   const boardSize = useComponentSize(boardRef);
   const { height, width } = boardSize;
 
+  const showDialog = useCallback(() => setIsAddOpen(true), []);
+
   useEffect(() => {
     if (height && width) {
       const parsedCards = parseData();
-      positionCards(parsedCards, width, height);
-      setCards({ ...parsedCards });
+      setCards(positionCards(parsedCards, width, height));
     }
   }, [height, width]);
 
   function handleDelete(card) {
-    delete cards[card.id];
-    setCards({ ...cards });
+    const clonedCards = { ...cards };
+    delete clonedCards[card.id];
+
+    setCards(clonedCards);
   }
 
   const cardEls = Object.values(cards).map(card => (
-    <Card
-      card={card}
-      boardSize={boardSize}
-      key={card.id}
-      onDragStart={dragOffset => setDragCardInfo({ card, dragOffset })}
-      onDragEnd={() => setDragCardInfo(null)}
-      onDoubleClick={() => handleDelete(card)}
-    />
+      <Card
+          card={card}
+          boardSize={boardSize}
+          key={card.id}
+          onDragStart={dragOffset => setDragCardInfo({ card, dragOffset })}
+          onDragEnd={() => setDragCardInfo(null)}
+          onDoubleClick={() => handleDelete(card)}
+      />
   ));
 
   return (
-    <div
-      className="App"
-      ref={boardRef}
-      onMouseMove={ev => {
-        if (!dragCardInfo) {
-          return;
-        }
+      <div
+          className="App"
+          ref={boardRef}
+          onMouseMove={ev => {
+            if (!dragCardInfo) {
+              return;
+            }
 
-        const { card, dragOffset } = dragCardInfo;
+            const { card, dragOffset } = dragCardInfo;
 
-        card.position = {
-          top: ev.pageY - dragOffset.y,
-          left: ev.pageX - dragOffset.x
-        };
+            const updatedCards = {
+              ...cards,
+              [card.id]: {
+                ...card,
+                position: {
+                  top: ev.pageY - dragOffset.y,
+                  left: ev.pageX - dragOffset.x
+                }
+              }
+            };
 
-        setCards({ ...cards });
-      }}
-    >
-      {cardEls}
-      <Summary cards={cards} />
-      <AddButton onClick={() => setIsAddOpen(true)} />
-      {isAddOpen && (
-        <AddModal
-          isOpen={isAddOpen}
-          onClose={() => setIsAddOpen(false)}
-          onAdd={cardText => {
-            addCard(cards, cardText);
-            positionCards(cards, width, height);
-            setCards(cards);
+            setCards(updatedCards);
           }}
-        />
-      )}
-    </div>
+      >
+        {cardEls}
+        <Summary cards={cards} />
+        <AddButton onClick={showDialog} />
+        {isAddOpen && (
+            <AddModal
+                isOpen={isAddOpen}
+                onClose={() => setIsAddOpen(false)}
+                onAdd={cardText => {
+                  const updatedCards = positionCards(
+                      addCard(cards, cardText),
+                      width,
+                      height
+                  );
+                  setCards(updatedCards);
+                }}
+            />
+        )}
+      </div>
   );
 }
 
