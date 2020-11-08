@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>A Practical Guide to Vanilla Web Components: Module 1 - Web Component Fundamentals</title>
+    <link rel="import" href="notice.html" id="notice" />
+</head>
+<body>
+    <p><strong>WARNING:</strong> These examples should be viewed in Chrome >= 55.</p>
+    <script>
+        const $link = document.getElementById("notice");
+        const content = $link.import.querySelector(".notice-frame");
+        document.body.appendChild(content.cloneNode(true));
+    </script>
+</body>
+</html>
