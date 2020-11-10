@@ -1,7 +1,5 @@
+'use strict';
 
+const productId = 1234;
 
-
-let price = 25;
-
-showMessage(price);
-console.log(price);
+console.log(productId);
