@@ -1,8 +1,8 @@
-react-dev-template/node_modules
-pluralsight-reactGettingStarted/node_modules
-pluralsight-designingReactComponents/node_modules
-pluralsight-stylingReactComponents/node_modules
-pluralsight-designingReactComponents/.next
+react/react-dev-template/node_modules
+react/pluralsight-reactGettingStarted/node_modules
+react/pluralsight-designingReactComponents/node_modules
+react/pluralsight-stylingReactComponents/node_modules
+react/pluralsight-designingReactComponents/.next
 .idea
-pluralsight-vanillaWebComponents/6-vanilla-web-components-practical-guide-m6-exercise-files/node_modules
-pluralsight-TDDUsingReact/node_modules
+webComponents/pluralsight-vanillaWebComponents/6-vanilla-web-components-practical-guide-m6-exercise-files/node_modules
+react/pluralsight-TDDUsingReact/node_modules
