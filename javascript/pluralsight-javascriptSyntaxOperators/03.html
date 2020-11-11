@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>for/in and for/of Samples</title>
+</head>
+
+<body>
+  <button onclick="forinSample();">for/in</button>
+  <button onclick="forofSample();">for/of</button>
+  <button onclick="loopStringSample();">Looping over a string</button>
+  <button onclick="breakSample();">break</button>
+  <button onclick="continueSample();">continue</button>
+  <button onclick="labelSample();">Labeled statement</button>
+
+  <script>
+    'use strict';
+
+    let _products = [
+      {
+        "productID": 680,
+        "name": "HL Road Frame - Black, 58",
+        "productNumber": "FR-R92B-58",
+        "color": "Black",
+        "standardCost": 1059.31,
+        "listPrice": 1431.50
+      },
+      {
+        "productID": 707,
+        "name": "Sport-100 Helmet, Red",
+        "productNumber": "HL-U509-R",
+        "color": "Red",
+        "standardCost": 13.08,
+        "listPrice": 34.99
+      },
+      {
+        "productID": 709,
+        "name": "Mountain Bike Socks, M",
+        "productNumber": "SO-B909-M",
+        "color": "White",
+        "standardCost": 3.3963,
+        "listPrice": 9.50
+      }
+    ];
+
+    // Using a for/in loop
+    function forinSample() {
+      let product = {
+        "productID": 680,
+        "name": "HL Road Frame - Black, 58",
+        "productNumber": "FR-R92B-58",
+        "color": "Black",
+        "standardCost": 1059.31,
+        "listPrice": 1431.50,
+        calculateGrossProfit: function () {
+          return this.listPrice - this.standardCost;
+        }
+      };
+
+      for (const key in product) {
+        console.log("'" + key + "'=" + product[key]);
+      }
+    }
+
+    // Using a for/of loop
+    function forofSample() {
+      for (const item of _products) {
+        console.log(JSON.stringify(item));
+      }
+    }
+
+    // Looping over a string
+    function loopStringSample() {
+      let productName = "HL Road Frame - Black, 58";
+      let letters = "";
+
+      for (const char of productName) {
+        letters += char;
+      }
+      console.log(letters);
+    }
+
+    // Use the break statement
+    function breakSample() {
+      for (const item of _products) {
+        if (item.standardCost < 20) {
+          break;
+        }
+        console.log(JSON.stringify(item));
+      }
+    }
+
+    // Use the continue statement
+    function continueSample() {
+      for (const item of _products) {
+        if (item.standardCost > 1000) {
+          continue;
+        }
+        console.log(JSON.stringify(item));
+      }
+    }
+
+    // Use of a label.
+    // NOTE: I don't recommend use of labels as this leads to spaghetti code
+    function labelSample() {
+      even:
+      for (let index = 1; index <= 10; index++) {
+        if (index % 2 == 1) {
+          continue even;
+        }
+        console.log(index);
+      }
+    }
+  </script>
+</body>
+
+</html>

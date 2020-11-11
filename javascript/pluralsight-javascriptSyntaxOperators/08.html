@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>'this' Samples</title>
+</head>
+
+<body>
+  <button onclick="functionScope();">Function scope</button>
+  <button onclick="this.style.background='Red'">
+    In event handler
+  </button>
+  <button onclick="eventHandler(this)">
+    Pass to function from event handler
+  </button>
+  <button onclick="objectLiteral();">Object literal</button>
+  <button onclick="callAndApply();">Use with call()/apply()</button>
+  <button onclick="constructorFunctions();">Constructor Functions</button>
+
+  <script>
+    // 'use strict';
+  
+    // Global scope - 'this' is mapped to global/window object
+    console.log("Begin: global scope sample");
+    console.log(this.toString());
+    console.log("this === window = " + (this === window).toString());
+    console.log("End: global scope sample");
+
+    // Function scope - 'this' is mapped to global/window object
+    //                  Uncomment 'use strict' above to show how it affects this function
+    function functionScope() {      
+      console.log(this.toString());
+      console.log("this === window = " + (this === window).toString());
+    }
+	
+    // Pass 'this' to function from event handler
+    function eventHandler(ctl) {
+      console.log(ctl.toString());
+    }
+
+    // Object literal
+    function objectLiteral() {
+      let product = {
+        "productID": 680,
+        "name": "HL Road Frame - Black, 58",
+        "standardCost": 1059.31,
+        "listPrice": 1431.50,
+        grossProfit: function () {
+          return (this.listPrice - this.standardCost)
+            .toLocaleString('en-US', {
+              style: 'currency', currency: 'USD'
+            });
+        }
+      };
+
+      console.log(product.grossProfit());
+    }
+
+    function callAndApply() {
+      let product = {
+        "productID": 680,
+        "name": "HL Road Frame - Black, 58",
+        "standardCost": 1059.31,
+        "listPrice": 1431.50,
+        grossProfit: function () {
+          return (this.listPrice - this.standardCost)
+            .toLocaleString("en-US", {
+              "style": "currency", "currency": "USD"
+            });
+        }
+      };
+
+      let prod2 = {
+        "standardCost": 500,
+        "listPrice": 850
+      }
+
+      // Call using reference to 'product' properties
+      console.log(product.grossProfit.call(product));
+      // Call using reference to 'prod2' properties
+      console.log(product.grossProfit.call(prod2));
+      console.log("");
+      console.log(product.grossProfit.apply(product));
+      console.log(product.grossProfit.apply(prod2));
+    }
+
+    function constructorFunctions() {
+      let prod1 = new Product(680, "HL Road Frame - Black, 58", 1059.31, 1431.50);
+      let prod2 = new Product(707, "Sport-100 Helmet, Red", 13.08, 34.99);
+
+      console.log(prod1.grossProfit());
+      console.log(prod2.grossProfit());
+    }
+
+    function Product(id, name, cost, price) {
+      this.productID = id;
+      this.name = name;
+      this.standardCost = cost;
+      this.listPrice = price;
+
+      this.grossProfit = function () {
+        return (this.listPrice - this.standardCost)
+            .toLocaleString("en-US", {
+              "style": "currency", "currency": "USD"
+            });
+      }
+    }
+  </script>
+</body>
+
+</html>

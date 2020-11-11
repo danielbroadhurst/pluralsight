@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Logical Operators Samples</title>
+</head>
+
+<body>
+  <button onclick="trueFalseSample();">true and false</button>
+  <button onclick="logicalSample();">Logical Operators</button>
+  <button onclick="shortCircuitAndSample();">Short Circuiting (&&)</button>
+  <button onclick="shortCircuitOrSample();">Short Circuiting (||)</button>
+
+  <script>
+    'use strict';
+
+    // true and false values
+    function trueFalseSample() {
+      let price = 200;
+      let color = "Red";
+      let result;
+
+      console.log("Check for 'true' values");
+      // Evaluate the expression
+      result = price > 10;
+      console.log(result);
+
+      // Test the expression
+      if(price > 10) {
+        console.log("Price is > 10");
+      }
+      
+      // Check if price has something other than zero
+      if(price) {
+        console.log("Price is > 0");
+      }
+
+      // Check if color has characters in it
+      if(color) {
+        console.log("color has a value");
+      }
+      console.log("");
+      console.log("Check for 'false' values");
+
+      // Set value to null, it becomes false
+      color = null;
+      console.log("color == null = " + Boolean(color));
+
+      // Set value to empty string, it becomes false
+      color = "";
+      console.log("color == '' = " + Boolean(color));
+
+      // Set value to undefined, it becomes false
+      color = undefined;
+      console.log("color == undefined = " + Boolean(color));
+
+      // Declare variable and don't initialize, it is false
+      let value;
+      console.log("'let value' = " + Boolean(value));
+
+      // Result of NaN is false
+      value = 100 / "test";
+      console.log("100 / 'test' = " + Boolean(value));
+    }
+
+    // Logical operators
+    function logicalSample() {
+      let price = 200;
+
+      // AND (&&) Operator
+      if (price > 10 && price < 1600) {
+        console.log("price > 10 && price < 1600 is 'true'");
+      }
+
+      // AND (&&) Operator
+      if (price > 10 && price < 200) {
+        console.log("price > 10 && price < 200 is 'true'");
+      }
+      else {
+        console.log("price > 10 && price < 200 is 'false'");
+      }
+
+      // OR (||) Operator
+      if (price > 10 || price < 1600) {
+        console.log("price > 10 || price < 1600 is 'true'");
+      }
+
+      // OR (||) Operator
+      if (price > 10 || price > 1600) {
+        console.log("price > 10 || price > 1600 is 'true'");
+      }
+
+      // NOT (!) Operator
+      if (!(price < 10)) {
+        console.log("!(price < 10) is 'true'");
+      }
+    }
+
+        // Short circuiting (&&)
+    function shortCircuitAndSample() {
+      let result;
+
+      // if first result is false, the second part is never evaluated
+      result = isColorRed("Black") && isGreaterThan1400(1400);
+    }
+
+    function isColorRed(value) {
+      console.log("In the isColorRed() function");
+      return value === "Red";
+    }
+
+    function isGreaterThan1400(value) {
+      console.log("In the isGreaterThan1400() function");
+      return value > 1400;
+    }
+
+    // Short circuiting (||)
+    function shortCircuitOrSample() {
+      let result;
+
+      console.log("");
+      console.log("Calling isColorRed() first");
+
+      // All sides are evaluated until one returns a true
+      result = isColorRed("Red") || isGreaterThan1400(200);
+
+      // All sides are evaluated until one returns a true
+      // the rest are skipped
+      console.log("");
+      console.log("Calling isGreaterThan1400() first");
+      result = isGreaterThan1400(200) || isColorRed("Black");
+    }
+  </script>
+</body>
+
+</html>

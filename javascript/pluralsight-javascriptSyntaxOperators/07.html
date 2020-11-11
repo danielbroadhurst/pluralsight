@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Detect Data Type Samples</title>
+</head>
+
+<body>
+  <button onclick="typeofSample();">typeof operator</button>
+  <button onclick="constructorSample();">Using constuctor</button>
+  <button onclick="helperFunctionsSample();">Helper functions</button>
+  <button onclick="instanceofSample();">instanceof operator</button>
+
+  <script>
+    'use strict';
+
+    let _products = [
+      {
+        productID: 680,
+        name: "HL Road Frame - Black, 58",
+        productNumber: "FR-R92B-58",
+        color: "Black",
+        standardCost: 1059.31,
+        listPrice: 1431.50
+      },
+      {
+        productID: 707,
+        name: "Sport-100 Helmet, Red",
+        productNumber: "HL-U509-R",
+        color: "Red",
+        standardCost: 13.08,
+        listPrice: 34.99
+      },
+      {
+        productID: 709,
+        name: "Mountain Bike Socks, M",
+        productNumber: "SO-B909-M",
+        color: "White",
+        standardCost: 3.3963,
+        listPrice: 9.50
+      }
+    ];
+
+    // Using the typeof operator
+    function typeofSample() {
+      let product = _products[0];
+      let introDate = new Date();
+      let strValue = new String();
+      let isActive = false;
+      let result;
+      let value = null;
+
+      console.log("_products = " + typeof _products);
+      console.log("product = " + typeof product);
+      console.log("product.productID = " + typeof product.productID);
+      console.log("product.productNumber = " + typeof product.productNumber);
+      console.log("strValue = " + typeof strValue);
+      console.log("introDate = " + typeof introDate);  // Dates are objects
+      console.log("isActive = " + typeof isActive);
+      console.log("result = " + typeof result);
+      console.log("value = " + typeof value);
+      console.log("typeofSample() = " + typeof typeofSample);
+    }
+
+        // Using the constructor function
+    function constructorSample() {
+      let product = _products[0];
+      let introDate = new Date();
+      let strValue = new String();
+      let isActive = false;
+
+      console.log("_products = " + _products.constructor.toString());
+      console.log("product = " + product.constructor.toString());
+      console.log("product.productID = " + product.productID.constructor.toString());
+      console.log("product.productNumber = " + product.productNumber.constructor.toString());
+      console.log("introDate = " + introDate.constructor.toString());
+      console.log("strValue = " + strValue.constructor.toString());
+      console.log("isActive = " + isActive.constructor.toString());
+      console.log("constructorSample() = " + constructorSample.constructor.toString());
+    }
+
+    // Using helper functions
+    function helperFunctionsSample() {
+      let introDate = new Date();
+      let result;
+      let value = null;
+
+      // Use helper functions that return true/false
+      console.log("_products is Array? = " + isArray(_products));
+      console.log("introDate is Date? = " + isDate(introDate));
+
+      // Be sure to check if something is null prior to using
+      console.log("result = " + isNullOrUndefined(result) ? 'null/undefined' : result);
+      console.log("value = " + isNullOrUndefined(value) ? 'null/undefined' : value);
+    }
+
+    function isArray(value) {
+      return value.constructor.toString().indexOf("Array") > -1;
+      // or use: return value.constructor === Array;
+    }
+
+    function isDate(value) {
+      return value.constructor.toString().indexOf("Date") > -1;
+      // or use: return value.constructor === Date;
+    }
+
+    function isNullOrUndefined(value) {
+      return value === null || value === undefined;
+    }
+
+    // Using the instanceof operator
+    function instanceofSample() {
+      let prod = new Product(680, "HL Road Frame - Black, 58",
+        "FR-R92B-58");
+      let dt = new Date();
+      let name = new String("Product Name");
+      let value = "A simple string";
+
+      console.log("prod instanceof Product = " + (prod instanceof Product).toString());
+      console.log("prod instanceof Object = " + (prod instanceof Object).toString());
+      console.log("dt instanceof Date = " + (dt instanceof Date).toString());
+      console.log("dt instanceof Object = " + (dt instanceof Object).toString());
+      console.log("name instanceof String = " + (name instanceof String).toString());
+      console.log("name instanceof Object = " + (name instanceof Object).toString());
+      console.log("value instanceof String = " + (value instanceof String).toString());
+      console.log("value instanceof Object = " + (value instanceof Object).toString());
+    }
+
+    function Product(id, name, number) {
+      this.productID = id;
+      this.name = name;
+      this.productNumber = number;
+      this.color = "Black";
+      this.standardCost = 10;
+      this.listPrice = 30;
+    }
+  </script>
+</body>
+
+</html>

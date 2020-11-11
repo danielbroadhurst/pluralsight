@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Exception Handling Samples</title>
+</head>
+
+<body>
+  <button onclick="simpleTryCatch();">Simple try...catch</button>
+  <button onclick="finallyCatchSample();">Finally statement with catch block</button>
+  <button onclick="finallySuccessSample();">Finally statement (Success)</button>
+  <button onclick="throwError();">Throw custom error</button>
+  <button onclick="referenceError();">Check for error type (Reference)</button>
+  <button onclick="rangeErrorSample();">Check for error type (Range)</button>
+  <button onclick="typeErrorSample();">Check for error type (Type)</button>
+  <button onclick="uriErrorSample();">Check for error type (URI)</button>
+  <button onclick="syntaxErrorSample();">Check for error type (Syntax)</button>
+
+  <script>
+    'use strict';
+
+    // Simple try...catch
+    function simpleTryCatch() {
+      let result;
+
+      try {
+        result = x / 10;
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    // A finally statement, catch block runs
+    function finallyCatchSample() {
+      let result;
+
+      try {
+        console.log("An error will occur.");
+        result = x / 10;
+        console.log("This line will never run.");
+      } catch (error) {
+        console.log("In the 'Catch' block: " + error.message);
+      }
+      finally {
+        console.log("In the 'finally' block");
+      }
+    }
+
+    // A finally statement, catch block does NOT run
+    function finallySuccessSample() {
+      let result;
+      let x = 100;
+
+      try {
+        console.log("An error won't occur.");
+        result = x / 10;
+      } catch (error) {
+        console.log("In the 'Catch' block: " + error.message);
+      }
+      finally {
+        console.log("In the 'finally' block");
+      }
+    }
+
+	// Throw a custom error object
+    function throwError() {
+      try {
+        attemptDivision();
+      } catch (error) {
+        console.log(error.message + " - Error Type: " + error.name);
+      }
+    }
+
+    function attemptDivision() {
+      let result;
+
+      try {
+        result = x / 10;
+      } catch (error) {
+        // Always include at least a 'message' and 'name' properties
+        throw {
+          "message": "In the attemptDivision() method the following error occurred: " + error.message,
+          "name": "CustomError"
+        };
+      }
+    } 
+	
+    // Check for type of error
+    function referenceError() {
+      let result;
+
+      try {
+        // Reference error because 'x' is not defined
+        result = x / 10;
+      } catch (error) {
+        handleError(error);
+      }
+    }
+
+    function rangeErrorSample() {
+      let result = 0;
+
+      try {
+        // Range error because a number cannot have 200 significant digits
+        result.toPrecision(200);
+      } catch (error) {
+        handleError(error);
+      }
+    }
+
+    function typeErrorSample() {
+      let result = 0;
+
+      try {
+        // Type error because result is a numeric
+        result.toUpperCase();
+      } catch (error) {
+        handleError(error);
+      }
+    }
+
+    function uriErrorSample() {
+      let uri = "http://www.netinc.com/path%%%/file name";
+
+      try {
+        // URI error
+        decodeURI(uri);
+      } catch (error) {
+        handleError(error);
+      }
+    }
+
+    function syntaxErrorSample() {
+      try {
+        // Syntax error because missing a final single quote
+        let sum = eval("alert('Hello)");
+      } catch (error) {
+        handleError(error);
+      }
+    }
+
+    function handleError(error) {
+      switch (error.name) {
+        case "ReferenceError":
+          console.log("Reference error: " + error.message);
+          break;
+        case "RangeError":
+          console.log("Range error: " + error.message);
+          break;
+        case "TypeError":
+          console.log("Type error: " + error.message);
+          break;
+        case "URIError":
+          console.log("URI error: " + error.message);
+          break;
+        case "SyntaxError":
+          console.log("Syntax error: " + error.message);
+          break;
+        case "EvalError":
+          console.log("Evaluation error: " + error.message);
+          break;
+        default:
+          console.log("Error Type: " + error.name + " - Message: " + error.message);
+          break;
+      }
+    }
+  </script>
+</body>
+
+</html>

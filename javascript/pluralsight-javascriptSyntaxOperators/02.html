@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Switch Statement Samples</title>
+</head>
+
+<body>
+  <button onclick="simpleSwitch();">Simple Switch Sample</button>
+  <button onclick="defaultAnywhere();">The 'default' can be anywhere</button>
+  <button onclick="multipleCase();">Multiple case statements</button>
+  <button onclick="forgetABreak();">Forget a break</button>
+  <button onclick="strictComparison();">Strict comparison</button>
+  <button onclick="blockScopeProblem();">Block-level scope problem</button>
+  <button onclick="blockScopeFix();">Block-level scope resolution</button>
+  <script>
+    'use strict';
+
+    function simpleSwitch() {
+      let productId = 2;
+
+      switch (productId) {
+        case 1:
+          console.log("HL Road Frame - Black, 58");
+          break;
+        case 2:
+          console.log("Sport-100 Helmet, Red");
+          break;
+        case 3:
+          console.log("Mountain Bike Socks, M");
+          break;
+        default:
+          console.log("Unknown product");
+          break;
+      }
+    }
+
+    function defaultAnywhere() {
+      let productId = 200;
+
+      switch (productId) {
+        default:
+          console.log("Unknown product");
+          break;
+        case 1:
+          console.log("HL Road Frame - Black, 58");
+          break;
+        case 2:
+          console.log("Sport-100 Helmet, Red");
+          break;
+        case 3:
+          console.log("Mountain Bike Socks, M");
+          break;
+      }
+    }
+
+    function multipleCase() {
+      let color = "Red";
+
+      switch (color) {
+        case "Red":
+        case "Pink":
+          console.log("The color is red");
+          break;
+        case "Blue":
+        case "Light Blue":
+        case "Dark Blue":
+          console.log("The color is blue");
+          break;
+        case "Gray":
+        case "Grey":
+          console.log("The color is grey");
+          break;
+        default:
+          console.log("Unknown color");
+          break;
+      }
+    }
+
+    function forgetABreak() {
+      let productId = 2;
+
+      switch (productId) {
+        case 1:
+          console.log("HL Road Frame - Black, 58");
+          break;
+        case 2:
+          console.log("Sport-100 Helmet, Red");
+        case 3:
+          console.log("Mountain Bike Socks, M");
+          break;
+        default:
+          console.log("Unknown product");
+          break;
+      }
+    }
+
+    function strictComparison() {
+      let productId = "2";
+
+      switch (productId) {
+        case 1:
+          console.log("HL Road Frame - Black, 58");
+          break;
+        case 2:
+          console.log("Sport-100 Helmet, Red");
+          break;
+        case 3:
+          console.log("Mountain Bike Socks, M");
+          break;
+        default:
+          console.log("Unknown product");
+          break;
+      }
+    }
+
+    // NOTE: Comment this out for all other functions to work
+    // function blockScopeProblem() {
+    //   let productId = 2;
+
+    //   switch (productId) {
+    //     case 1:
+    //       let message = "HL Road Frame - Black, 58";
+    //       console.log(message);
+    //       break;
+    //     case 2:
+    //       let message = "Sport-100 Helmet, Red";
+    //       console.log(message);
+    //       break;
+    //     case 3:
+    //       let message = "Mountain Bike Socks, M";
+    //       console.log(message);
+    //       break;
+    //     default:
+    //       let message = "Unknown product";
+    //       console.log(message);
+    //       break;
+    //   }
+    // }
+
+    function blockScopeFix() {
+      let productId = 2;
+
+      switch (productId) {
+        case 1: {
+          let message = "HL Road Frame - Black, 58";
+          console.log(message);
+          break;
+        }
+        case 2: {
+          let message = "Sport-100 Helmet, Red";
+          console.log(message);
+          break;
+        }
+        case 3: {
+          let message = "Mountain Bike Socks, M";
+          console.log(message);
+          break;
+        }
+        default: {
+          let message = "Unknown product";
+          console.log(message);
+          break;
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
