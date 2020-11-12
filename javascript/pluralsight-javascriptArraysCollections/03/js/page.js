@@ -1,16 +1,16 @@
 // Accessing the objects
-let ctx = document.getElementById('monthlySales').getContext('2d');
-let pieCtx = document.getElementById('deptSales').getContext('2d');
+let ctx = document.getElementById("monthlySales").getContext("2d");
+let pieCtx = document.getElementById("deptSales").getContext("2d");
 
-let yearlyLabel = document.getElementById('yearlyTotal');
+let yearlyLabel = document.getElementById("yearlyTotal");
 
 // Values from the form
-let newAmount = document.getElementById('itemAmount');
-let newMonth = document.getElementById('monthId');
+let newAmount = document.getElementById("itemAmount");
+let newMonth = document.getElementById("monthId");
 
-let hikingRadio = document.getElementById('hiking');
-let runningRadio = document.getElementById('running');
-let huntingRadio = document.getElementById('hunting');
+let hikingRadio = document.getElementById("hiking");
+let runningRadio = document.getElementById("running");
+let huntingRadio = document.getElementById("hunting");
 
 let yearlyTotal = 0;
 
@@ -19,83 +19,87 @@ const monthlyLabels = new Set();
 
 const categories = new WeakSet();
 
-let hiking = {category: "Hiking"};
-let running = {category: "Running"};
-let hunting = {category: "Hunting"};
+let hiking = { category: "Hiking" };
+let running = { category: "Running" };
+let hunting = { category: "Hunting" };
 
-function addSale(){
-	monthlySales.add(parseInt(newAmount.value));
-	monthlyLabels.add(newMonth.value);
-	
-	yearlyTotal = 0;
+function addSale() {
+  monthlySales.add(parseInt(newAmount.value));
+  monthlyLabels.add(newMonth.value);
 
-	monthlySalesChart.data.datasets.forEach((dataset) => {
-	    dataset.data = [];
-	});
+  yearlyTotal = 0;
 
-	for (let amount of monthlySales){
-		yearlyTotal = amount + yearlyTotal;
-		yearlyLabel.innerHTML = yearlyTotal;
+  monthlySalesChart.data.datasets.forEach((dataset) => {
+    dataset.data = [];
+  });
 
-		monthlySalesChart.data.datasets.forEach((dataset) => {
-			dataset.data.push(amount)
-		})
+  for (let amount of monthlySales) {
+    yearlyTotal = amount + yearlyTotal;
+    yearlyLabel.innerHTML = yearlyTotal;
 
-	}
+    monthlySalesChart.data.datasets.forEach((dataset) => {
+      dataset.data.push(amount);
+    });
+  }
 
-	monthlySalesChart.data.labels = Array.from(monthlyLabels);
+  monthlySalesChart.data.labels = Array.from(monthlyLabels);
 
-	monthlySalesChart.update();
+  monthlySalesChart.update();
 
-	if (hikingRadio.checked) {
-		categories.add(hiking);
-	} else if (runningRadio.checked) {
-	    categories.add(running);
-	} else if (huntingRadio){
-	    categories.add(hunting);
-	} else{
-	    // Do something
-	}
+  if (hikingRadio.checked) {
+    categories.add(hiking);
+  } else if (runningRadio.checked) {
+    categories.add(running);
+  } else if (huntingRadio.checked) {
+    categories.add(hunting);
+  } else {
+    // Do something
+  }
 
-	console.log(categories);
-
+  console.log(categories);
 }
 
-function deletVal(){
-	monthlySales.forEach((value1, value2, monthlySales) =>{
-		alert(value1)
-	})
+function deletVal() {
+  monthlySales.forEach((value1, value2, monthlySales) => {
+    alert(value1, value2, monthlySales);
+  });
 }
 
-function addTotal(){
-	
+function addTotal() {
+  for (let amount of monthlySales) {
+    alert(amount);
+  }
 }
 
 // Bar chart
 var monthlySalesChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: [],
-        datasets: [{
-            label: '# of Sales',
-            data: [],
-            backgroundColor: [
-                'rgba(238, 184, 104, 1)',
-                'rgba(75, 166, 223, 1)',
-                'rgba(239, 118, 122, 1)',
-            ],
-            borderWidth: 0
-        }]
+  type: "bar",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: "# of Sales",
+        data: [],
+        backgroundColor: [
+          "rgba(238, 184, 104, 1)",
+          "rgba(75, 166, 223, 1)",
+          "rgba(239, 118, 122, 1)",
+        ],
+        borderWidth: 0,
+      },
+    ],
+  },
+  options: {
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
     },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    }
+  },
 });
 
 // Pie Chart
@@ -115,6 +119,6 @@ var monthlySalesChart = new Chart(ctx, {
 //         }]
 //     },
 //     options: {
-        
+
 //     }
 // })
