@@ -8,7 +8,15 @@ function login(req, res) {
     // Mark user session as authenticated
     res.cookie("loggedInUser", email);
     // Get return address
-    const returnTo = JSON.parse(req.query.returnTo);
+    let returnTo;
+    try {
+      returnTo = JSON.parse(req.query.returnTo);
+    } catch (error) {
+      if (!returnTo || typeof returnTo.url === "string") {
+        res.clearCookie("loggedInUser");
+        throw Error("Invalid returnTo object");
+      }
+    }
     // Redirect to the return address
     res.redirect(returnTo.url);
   } else {
