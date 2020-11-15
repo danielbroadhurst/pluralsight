@@ -13,7 +13,9 @@ function filter(items, field, value) {
 function getParams(qs, params) {
   const results = [];
   for (let i = 0; i < params.length; ++i) {
-    const value = qs.hasOwnProperty(params[i]) ? qs[params[i]] : null;
+    const value = Object.prototype.hasOwnProperty.call(qs, params[i])
+      ? qs[params[i]]
+      : null;
     results.push(value);
   }
   return results;
