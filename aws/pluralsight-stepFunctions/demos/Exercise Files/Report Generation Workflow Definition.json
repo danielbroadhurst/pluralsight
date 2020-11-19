@@ -1,0 +1,113 @@
+{
+    "StartAt": "GenerateClientReport",
+    "States": {
+      "GenerateClientReport": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke", 
+        "Parameters": {
+          "FunctionName": "arn:aws:lambda:us-east-1:049827573258:function:globomantics-report-create",
+          "Payload": {}
+        },
+        "ResultPath": "$.reportGenerationOutput",
+        "Next": "MapEmailPathForUnEncryptedReport"
+      },
+      "MapEmailPathForUnEncryptedReport": {
+        "Type": "Pass",
+        "Parameters": {
+          "emailFile.$": "$.reportGenerationOutput.Payload",
+          "unencryptedFile.$": "$.reportGenerationOutput.Payload",
+          "encryptedFile": ""
+        },
+        "ResultPath": "$.reportOptions.reportData",
+        "Next": "ShouldEncrypt"
+      },
+      "ShouldEncrypt": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "Variable": "$.reportOptions.shouldEncrypt",
+            "BooleanEquals": true,
+            "Next": "EncryptReport"
+          },
+          {
+            "Variable": "$.reportOptions.shouldEncrypt",
+            "BooleanEquals": false,
+            "Next": "EmailReport"
+          }
+        ],
+        "Default": "EmailReport"
+      },
+      "EncryptReport": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "Parameters": {
+          "FunctionName": "arn:aws:lambda:us-east-1:049827573258:function:globomantics-encrypt",
+          "Payload": {
+            "reportFile.$": "$.reportOptions.reportData.unencryptedFile"
+          }
+        },
+        "ResultPath": "$.encryptionOutput",
+        "Next": "MapEmailPathForEncryptedReport"
+      },
+      "MapEmailPathForEncryptedReport": {
+        "Type": "Pass",
+        "Parameters": {
+          "emailFile.$": "$.encryptionOutput.Payload",
+          "encryptedFile.$": "$.encryptionOutput.Payload",
+          "unencryptedFile.$": "$.reportGenerationOutput.Payload"
+        },
+        "ResultPath": "$.reportOptions.reportData",
+        "Next": "EmailReport"
+      },
+      "EmailReport": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+          "Retry": [
+          {
+            "ErrorEquals": ["EmailSendingFailure"],
+            "IntervalSeconds": 15,
+            "MaxAttempts": 2,
+            "BackoffRate": 4
+          }
+        ],
+         "Catch": [
+          {
+            "ErrorEquals": ["EmailSendingFailure" ],
+            "Next": "Cleanup",
+            "ResultPath": "$.emailSendingError"
+          },
+           {
+            "ErrorEquals": [ "States.All"],
+            "Next": "Cleanup",
+            "ResultPath": "$.encryptionError"
+          }
+        ],
+        "Parameters": {
+          "FunctionName": "arn:aws:lambda:us-east-1:049827573258:function:globomantics-email",
+          "Payload": {
+            "emailFile.$": "$.reportOptions.reportData.emailFile",
+            "clientEmail.$": "$.reportOptions.clientEmail",
+            "emailSubject.$": "$.reportOptions.emailSubject",
+            "emailBody.$": "$.reportOptions.emailBody"
+          }
+        },
+        "ResultPath": "$.emailOutput",
+        "Next": "Cleanup"
+      },
+      "Cleanup": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "Parameters": {
+          "FunctionName": "arn:aws:lambda:us-east-1:049827573258:function:globomantics-cleanup",
+          "Payload": {
+            "files": {
+            
+              "unencryptedFile.$": "$.reportOptions.reportData.unencryptedFile"
+            }
+          }
+        },
+        "ResultPath": "$.cleanupOutput",
+        "End": true
+      }
+    }
+  }
