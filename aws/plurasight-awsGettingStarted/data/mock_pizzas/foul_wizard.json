@@ -1,6 +1,6 @@
 {
 	"name": "Foul Wizard",
 	"toppings": ["dough_crust", "marinara_sauce", "banana_peppers", "rainbows", "money"],
-	"img": "//pizza-luvrs-ryan.s3-us-west-2.amazonaws.com/pizzas/foul-wizard.png",
+	"img": "//pizza-db.s3.eu-west-2.amazonaws.com/pizzas/foul-wizard.png",
 	"username": "kathy"
 }
