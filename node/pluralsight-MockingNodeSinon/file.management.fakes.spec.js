@@ -5,7 +5,7 @@ const proxyquire = require("proxyquire");
 
 const fileManagement = require("./file.management");
 
-describe("File Management Stub", () => {
+describe.skip("File Management Stub", () => {
   afterEach(() => {
     sinon.restore();
   });
