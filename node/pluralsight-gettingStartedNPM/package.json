@@ -1,0 +1,19 @@
+{
+  "name": "trip-to-mars",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "jshint": "^2.11.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "author": "Joe Eames",
+  "license": "ISC"
+}
