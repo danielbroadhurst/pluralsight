@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const fileManagement = require("./file.management");
 
-describe("File Management", () => {
+describe.skip("File Management", () => {
   it("Should create a new file", () => {
     const result = fileManagement.createFile("test.txt");
     expect(result).to.be.undefined;
