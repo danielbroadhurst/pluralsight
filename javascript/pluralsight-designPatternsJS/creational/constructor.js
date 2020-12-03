@@ -1,5 +1,8 @@
 "use strict";
-const Repo = require("./module")();
+const Repo = require("./module")(); // Execute the function which is required
+const singletonRepo = require("./singleton");
+singletonRepo.save("--> Singleton Example: Task from constructor");
+
 /**
  * Constructor Pattern
  * Use to create new object with their own object scope.
@@ -70,8 +73,6 @@ let taskProto4 = new TaskProto("create a demo for prototypes");
  * Constructor Node
  * This means it can be used elsewhere in a node application.
  */
-module.exports = TaskProto;
-
 /**
  * Classes
  */
@@ -98,5 +99,4 @@ class TaskClass {
 // taskClass3.save();
 // taskClass4.save();
 
-const singletonRepo = require("./singleton");
-singletonRepo.save("--> Singleton Example: Task from constructor");
+module.exports = TaskProto;
