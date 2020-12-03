@@ -1,5 +1,5 @@
-'use strict'
-const Repo = require('./module');
+"use strict";
+const Repo = require("./module")();
 /**
  * Constructor Pattern
  * Use to create new object with their own object scope.
@@ -8,8 +8,8 @@ function ObjectName(param1, param2) {
   this.param1 = param1;
   this.param2 = param2;
   this.toString = function () {
-    return this.param1 + ' ' + this.param2
-  }
+    return this.param1 + " " + this.param2;
+  };
 }
 
 /**
@@ -20,17 +20,17 @@ let Task = function (name) {
   this.completed = false;
 
   this.complete = function () {
-    console.log('Completing Task: ' + this.name);
-    this.completed = true
-  }
+    console.log("Completing Task: " + this.name);
+    this.completed = true;
+  };
   this.save = function () {
-    console.log('Saving Task: ' + this.name);
-  }
-}
-let task1 = new Task('create a demo for constructors')
-let task2 = new Task('create a demo for modules')
-let task3 = new Task('create a demo for singletons')
-let task4 = new Task('create a demo for prototypes')
+    console.log("Saving Task: " + this.name);
+  };
+};
+let task1 = new Task("create a demo for constructors");
+let task2 = new Task("create a demo for modules");
+let task3 = new Task("create a demo for singletons");
+let task4 = new Task("create a demo for prototypes");
 
 // task1.complete();
 // task2.save();
@@ -46,20 +46,20 @@ let task4 = new Task('create a demo for prototypes')
 let TaskProto = function (data) {
   this.name = data.name;
   this.completed = false;
-}
+};
 
 TaskProto.prototype.save = function () {
-  console.log('Saving Task: ' + this.name);
-  Repo.save(this)
-}
+  console.log("Saving Task: " + this.name);
+  Repo.save(this);
+};
 TaskProto.prototype.complete = function () {
-  console.log('Completing Task: ' + this.name);
-}
+  console.log("Completing Task: " + this.name);
+};
 
-let taskProto1 = new TaskProto('create a demo for constructors')
-let taskProto2 = new TaskProto('create a demo for modules')
-let taskProto3 = new TaskProto('create a demo for singletons')
-let taskProto4 = new TaskProto('create a demo for prototypes')
+let taskProto1 = new TaskProto("create a demo for constructors");
+let taskProto2 = new TaskProto("create a demo for modules");
+let taskProto3 = new TaskProto("create a demo for singletons");
+let taskProto4 = new TaskProto("create a demo for prototypes");
 
 // taskProto1.complete();
 // taskProto2.save();
@@ -81,11 +81,11 @@ class TaskClass {
     this.completed = false;
   }
   complete() {
-    console.log('Completing Task: ' + this.name);
-    this.completed = true
+    console.log("Completing Task: " + this.name);
+    this.completed = true;
   }
   save() {
-    console.log('Saving Task: ' + this.name);
+    console.log("Saving Task: " + this.name);
   }
 }
 // let taskClass1 = new TaskClass('create a demo for constructors')
@@ -97,3 +97,6 @@ class TaskClass {
 // taskClass2.save();
 // taskClass3.save();
 // taskClass4.save();
+
+const singletonRepo = require("./singleton");
+singletonRepo.save("--> Singleton Example: Task from constructor");
