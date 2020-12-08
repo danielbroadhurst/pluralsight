@@ -3,7 +3,7 @@ import path from 'path'
 
 const app = express();
 const port = process.env.npm_package_config_port || 4005;
-let runningMessage = 'Server is running on Port ' + port;
+let runningMessage = 'Server is running on Port ' + port + ' being watched';
 
 app.get('/api', (req, res) => {
   console.log('API was successfully called');

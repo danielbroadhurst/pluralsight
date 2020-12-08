@@ -8,9 +8,11 @@ COPY package*.json ./
 
 RUN npm install
 
+RUN npm install -g nodemon
+
 # Copy the app Source
 COPY . .
 
 EXPOSE 5000
 
-CMD ["node", "index.js"]
+CMD ["nodemon", "-L", "index.js"]
