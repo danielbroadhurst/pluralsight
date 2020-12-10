@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build:watch",
+			"path": "node/pluralsight-automatingNodeWithNPM/",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "npm: build:watch - node/pluralsight-automatingNodeWithNPM",
+			"detail": "npm run tsc -- --watch"
+		}
+	]
+}
