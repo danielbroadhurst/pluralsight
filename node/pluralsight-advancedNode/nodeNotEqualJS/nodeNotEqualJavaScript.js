@@ -9,3 +9,5 @@
 //      - require('repl') can create a repl session with options
 //      - node -p will evaluate a script
 //      - node -r will require a module
+
+// global - imported variables are not available 
