@@ -1,0 +1,1830 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "IndexLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-index"
+      }
+    },
+    "GameStartLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-gameStart"
+      }
+    },
+    "GameSaveLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-gameSave"
+      }
+    },
+    "GameScoresLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-gameScores"
+      }
+    },
+    "GameVerifyLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-gameVerify"
+      }
+    },
+    "PopulateDataLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-populateData"
+      }
+    },
+    "GetFoodItemsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-getFoodItems"
+      }
+    },
+    "GetRandomTrashPandaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-getRandomTrashPanda"
+      }
+    },
+    "SaveActionLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-saveAction"
+      }
+    },
+    "ProcessActionLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/trash-panda-buffet-dev-processAction"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "dev",
+                  "trash-panda-buffet",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/trash-panda-buffet-dev*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/trash-panda-buffet-dev*:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cloudfront:GetDistribution",
+                    "kinesis:GetRecords",
+                    "kinesis:PutRecord"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "trash-panda-buffet",
+              "dev",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "IndexLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-index",
+        "Handler": "src/lambda/static.index",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash",
+            "CLIENT_BUCKET": "trash-panda-buffet-client-ryan-unique",
+            "CLOUDFRONT_DOMAIN": {
+              "Fn::GetAtt": [
+                "assetsCloudFrontDistribution",
+                "DomainName"
+              ]
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "IndexLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "IndexLambdaVersionZqS1madgVcZZH50p8F7QWnl2EzIX7vYUKZcEup27RA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "IndexLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "GameStartLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-gameStart",
+        "Handler": "src/lambda/game.init",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "GameStartLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GameStartLambdaVersion7SoBlxX0nmAvQHFG2rKqB3F8rVA2W1PLzJgKVGKZBc": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GameStartLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "GameSaveLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-gameSave",
+        "Handler": "src/lambda/game.save",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "GameSaveLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GameSaveLambdaVersionMuLY0kq4WjCvS3qwVAfHxrRNC1nOSSvPSXsWRlXCs8": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GameSaveLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "GameScoresLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-gameScores",
+        "Handler": "src/lambda/game.scores",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "GameScoresLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GameScoresLambdaVersionSfrRrCcP1RzQsHOgdAE4DXIwwz9hRGt0NjrwIlCaLk": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GameScoresLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "GameVerifyLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-gameVerify",
+        "Handler": "src/lambda/game.verify",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "GameVerifyLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GameVerifyLambdaVersionyUZJr93xgWZeKjM2buucqJZu1Ve6DnUiDqwAVugCc": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GameVerifyLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "PopulateDataLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-populateData",
+        "Handler": "src/lambda/data.populate",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "PopulateDataLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "PopulateDataLambdaVersion53vjNBXyl48vcoXFP2FhnsvsddX1XgOladO4HTpb0": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "PopulateDataLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "GetFoodItemsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-getFoodItems",
+        "Handler": "src/lambda/food.getAll",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "GetFoodItemsLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GetFoodItemsLambdaVersionsmsCk1B2Jb2LEgAL5PfZjXS2YLKqG2FZ1l7KeY": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetFoodItemsLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "GetRandomTrashPandaLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-getRandomTrashPanda",
+        "Handler": "src/lambda/trash-panda.getRandom",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "GetRandomTrashPandaLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GetRandomTrashPandaLambdaVersionTwKBuWp6pxCA0FrhXCgjs5ineMfyrTtM1KsywMYk": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetRandomTrashPandaLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "SaveActionLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-saveAction",
+        "Handler": "src/lambda/action.save",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash",
+            "PARTITION_KEY": "food-action",
+            "STREAM_NAME": "trash-panda-buffet"
+          }
+        }
+      },
+      "DependsOn": [
+        "SaveActionLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "SaveActionLambdaVersionqkC5GhZ3jE5sh6sgCvHITpEcHAvz8BNJA0smZbssI": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SaveActionLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "ProcessActionLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/trash-panda-buffet/dev/1580007160723-2020-01-26T02:52:40.723Z/trash-panda-buffet.zip"
+        },
+        "FunctionName": "trash-panda-buffet-dev-processAction",
+        "Handler": "src/lambda/action.process",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 6,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "DB_ADDRESS": {
+              "Fn::GetAtt": [
+                "gameDBCluster",
+                "Endpoint.Address"
+              ]
+            },
+            "DB_NAME": "trashPandaBuffet",
+            "DB_PASSWORD": "pandabear",
+            "DB_USERNAME": "trash"
+          }
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "trashPandaSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Ref": "trashPandaSubnetA"
+            },
+            {
+              "Ref": "trashPandaSubnetB"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProcessActionLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ProcessActionLambdaVersionNJL4CQowxF1AvFXE6CN709tfq8SSQdaAGzRsZ61Y": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProcessActionLambdaFunction"
+        },
+        "CodeSha256": "UkJ6dWb5rS/FFlsiCvMV9kzdbMivqhNfI6azsIfk8E0="
+      }
+    },
+    "ApiGatewayRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "dev-trash-panda-buffet",
+        "EndpointConfiguration": {
+          "Types": [
+            "EDGE"
+          ]
+        },
+        "Policy": ""
+      }
+    },
+    "ApiGatewayResourceGame": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "game",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceGameIdVar": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceGame"
+        },
+        "PathPart": "{id}",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceScores": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "scores",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceFooditems": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "foodItems",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceTrashpanda": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "trashPanda",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "IndexLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayMethodGamePost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceGame"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "GameStartLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayMethodGameIdVarPut": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "RequestParameters": {
+          "method.request.querystring.name": true,
+          "method.request.querystring.score": true,
+          "method.request.path.id": true
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceGameIdVar"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "GameSaveLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayMethodScoresGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceScores"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "GameScoresLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayMethodFooditemsGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceFooditems"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "GetFoodItemsLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayMethodTrashpandaGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {
+          "method.request.querystring.used": false
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceTrashpanda"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "GetRandomTrashPandaLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayDeployment1580007133946": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "StageName": "dev"
+      },
+      "DependsOn": [
+        "ApiGatewayMethodGet",
+        "ApiGatewayMethodGamePost",
+        "ApiGatewayMethodGameIdVarPut",
+        "ApiGatewayMethodScoresGet",
+        "ApiGatewayMethodFooditemsGet",
+        "ApiGatewayMethodTrashpandaGet"
+      ]
+    },
+    "IndexLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "IndexLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "GameStartLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GameStartLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "GameSaveLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GameSaveLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "GameScoresLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GameScoresLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "GetFoodItemsLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetFoodItemsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "GetRandomTrashPandaLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetRandomTrashPandaLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "assetsCloudFrontDistribution": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Origins": [
+            {
+              "DomainName": "trash-panda-buffet-client-ryan-unique.s3.amazonaws.com",
+              "Id": "trash-panda-buffet",
+              "CustomOriginConfig": {
+                "HTTPPort": 80,
+                "HTTPSPort": 443,
+                "OriginProtocolPolicy": "https-only"
+              }
+            }
+          ],
+          "Enabled": true,
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "HEAD",
+              "GET"
+            ],
+            "TargetOriginId": "trash-panda-buffet",
+            "ForwardedValues": {
+              "QueryString": "false",
+              "Cookies": {
+                "Forward": "none"
+              }
+            },
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "ViewerCertificate": {
+            "CloudFrontDefaultCertificate": "true"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ]
+      }
+    },
+    "gameDBCluster": {
+      "Type": "AWS::RDS::DBCluster",
+      "Properties": {
+        "DatabaseName": "trashPandaBuffet",
+        "DBClusterIdentifier": "trash-panda-buffet",
+        "DBSubnetGroupName": {
+          "Ref": "trashPandaSubnetGroup"
+        },
+        "Engine": "aurora",
+        "MasterUsername": "trash",
+        "MasterUserPassword": "pandabear",
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "trashPandaSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ]
+      }
+    },
+    "gameDBInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBClusterIdentifier": {
+          "Ref": "gameDBCluster"
+        },
+        "DBInstanceClass": "db.r4.large",
+        "Engine": "aurora",
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ]
+      }
+    },
+    "gameActionKinesisStream": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": "trash-panda-buffet",
+        "ShardCount": 1,
+        "Tags": [
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ]
+      }
+    },
+    "trashPandaVPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "trash-panda-buffet"
+          },
+          {
+            "Key": "Group",
+            "Value": "trash-panda-buffet"
+          }
+        ]
+      }
+    },
+    "trashPandaSubnetA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "trashPandaVPC"
+        }
+      }
+    },
+    "trashPandaSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "trashPandaVPC"
+        }
+      }
+    },
+    "trashPandaSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupName": "trash-panda-subnet-group",
+        "DBSubnetGroupDescription": "Subnet group for trash panda buffet",
+        "SubnetIds": [
+          {
+            "Ref": "trashPandaSubnetA"
+          },
+          {
+            "Ref": "trashPandaSubnetB"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "trash-panda-buffet"
+          }
+        ]
+      }
+    },
+    "trashPandaSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupName": "trash-panda-sg",
+        "GroupDescription": "Security Group for those trash pandas",
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": -1,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "trash-panda-buffet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "trashPandaVPC"
+        }
+      }
+    },
+    "trashPandaSGIngressRule": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": -1,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "trashPandaSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "trashPandaSecurityGroup",
+            "GroupId"
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      }
+    },
+    "IndexLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "IndexLambdaVersionZqS1madgVcZZH50p8F7QWnl2EzIX7vYUKZcEup27RA"
+      }
+    },
+    "GameStartLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GameStartLambdaVersion7SoBlxX0nmAvQHFG2rKqB3F8rVA2W1PLzJgKVGKZBc"
+      }
+    },
+    "GameSaveLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GameSaveLambdaVersionMuLY0kq4WjCvS3qwVAfHxrRNC1nOSSvPSXsWRlXCs8"
+      }
+    },
+    "GameScoresLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GameScoresLambdaVersionSfrRrCcP1RzQsHOgdAE4DXIwwz9hRGt0NjrwIlCaLk"
+      }
+    },
+    "GameVerifyLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GameVerifyLambdaVersionyUZJr93xgWZeKjM2buucqJZu1Ve6DnUiDqwAVugCc"
+      }
+    },
+    "PopulateDataLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "PopulateDataLambdaVersion53vjNBXyl48vcoXFP2FhnsvsddX1XgOladO4HTpb0"
+      }
+    },
+    "GetFoodItemsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GetFoodItemsLambdaVersionsmsCk1B2Jb2LEgAL5PfZjXS2YLKqG2FZ1l7KeY"
+      }
+    },
+    "GetRandomTrashPandaLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GetRandomTrashPandaLambdaVersionTwKBuWp6pxCA0FrhXCgjs5ineMfyrTtM1KsywMYk"
+      }
+    },
+    "SaveActionLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "SaveActionLambdaVersionqkC5GhZ3jE5sh6sgCvHITpEcHAvz8BNJA0smZbssI"
+      }
+    },
+    "ProcessActionLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProcessActionLambdaVersionNJL4CQowxF1AvFXE6CN709tfq8SSQdaAGzRsZ61Y"
+      }
+    },
+    "ServiceEndpoint": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiGatewayRestApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/dev"
+          ]
+        ]
+      }
+    },
+    "cloudFrontDistributionOutput": {
+      "Value": {
+        "Ref": "assetsCloudFrontDistribution"
+      }
+    }
+  }
+}
