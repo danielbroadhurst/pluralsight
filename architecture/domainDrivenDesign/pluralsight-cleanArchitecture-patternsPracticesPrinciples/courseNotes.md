@@ -34,3 +34,64 @@ Cons:
   - Initial higher cost
 
 Organise folders by the key entities, such as Sales, Products, Customers and Common (which are shared).
+
+## Application Layer
+
+  - Layers of abstraction
+  - Single-responsibility
+  - Isolate roles and skills
+  - Multiple implementations
+  - Varying rates of change
+
+  - Modern Four-layer Architecture
+    - Presentation, Application, Domain
+      - Persistence & Database
+      - Infrastructure & OS
+  - Application Layer
+    - Implements use cases
+    - High level application logic
+    - No knowledge of the other layers
+    - Contains interfaces
+  - Layer Dependencies
+    - Dependency inversion
+    - Inversion of control
+    - Independent deployabilty 
+    - Flexible and maintainable
+Pros:
+  - Focus on use cases
+  - Easy to understand
+  - Follows the Dependency Inversion Principle
+Cons:
+  - Additional layer cost
+  - Requires extra thought
+  - Inversion of Control is counter intuitive
+
+## Commands and Queries
+
+CQRS Architectures:
+  - Split out Queries and Commands into separate layers. Commands use Domain and Persistance layer, Queries use the database.
+  - Types: 
+      - Single Database
+      - Two database [Read Database -> Queries, Commands -> Write Database], 
+      - Event Sourcing CQRS - Commands use an Event Store, Events can be replayed in sequence.
+
+  - Command-Query Separation
+    Command
+      - Does something
+      - Should modify state
+      - Should not return a value
+    Query
+      - Answers a question
+      - Should not modify state
+      - Should return a value
+    Exceptions
+      - Pop a stack [Remove item (command), Return top item (query)]
+      - Create a new record [Create a record (command), Returnnew ID (query)]
+Pros:
+  - More efficient design
+  - Optimized performance
+  - Event Sourcing benefits if Event Sourcing is implemented
+Cons:
+  - Inconsistent across stacks
+  - More complex
+  - Event sourcing costs
