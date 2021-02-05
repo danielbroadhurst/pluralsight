@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Provides interface for creating object in superclass, but allows the subclass to
+ * alter the type of objects that will be created/
+ */
+
 // The Product interface declares the operations for all concrete product
 interface Transport {
 

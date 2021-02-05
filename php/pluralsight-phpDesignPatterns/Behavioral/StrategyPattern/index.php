@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Defines a family of algorithms, encapsualte each into separate class,
+ * makes objects interchangable.
+ * 
+ * To use different variants of algorithm within an object and be able to
+ * switch from on algorithm to another during runtime.
+ * 
+ * When the class has massive conitional operator for different variants of
+ * same algorithm
+ */
+
 // Strategy Interface
 interface PaymentGateway {
     /**

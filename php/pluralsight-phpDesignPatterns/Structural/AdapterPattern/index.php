@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Allows objects with incompatible interfaces to collaborate.
+ * 
+ * Adapter class serves as a bridge between some existing service code and our app code. 
+ * 
+ * Adapter pattern makes the existing or new incompatible APIs work, 
+ * without changing the exisitng code.
+ */
+
 // Target/client
 interface Share {
 

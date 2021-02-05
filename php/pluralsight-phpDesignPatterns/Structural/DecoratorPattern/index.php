@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Add new behaviours to existing object by placing these objects
+ * inside special wrapper objects that contain the behaviours
+ * 
+ * To assign behaviours to objects dynamically, without modifying
+ * the code that uses the object.
+ * 
+ * Used when it is complex or not possible to extend the objects
+ * behaviour using inheritance.
+ */
+
 // Base Component
 interface Pizza {
     public function getDesc() : string;

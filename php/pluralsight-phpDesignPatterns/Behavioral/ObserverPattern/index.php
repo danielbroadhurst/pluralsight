@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Defines a subscription mechanism to notify the changes in one
+ * object to all its observer dependent objects.
+ * 
+ * Used when changes to state of one object require changing of other objects
+ *  - an object observes other object and changes accordingly
+ */
+
 // Subscriber Interface
 interface Subscriber {
 
