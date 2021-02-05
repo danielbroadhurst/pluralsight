@@ -1,0 +1,85 @@
+// Base Component
+interface Pizza {
+    public function getDesc() : string;
+
+    public function cost() : float;
+}
+
+// Concrete Component
+class Margherita implements Pizza {
+
+    public function getDesc() : string {
+        return "Margherita ";
+    }
+
+    public function cost(): float {
+        return 299;
+    }
+}
+
+class VeggieParadise implements Pizza {
+
+    public function getDesc() : string {
+        return "Veggie Paradise ";
+    }
+
+    public function cost(): float {
+        return 399;
+    }
+}
+
+// Base Decorator
+class PizzaToppings implements Pizza {
+
+    protected $pizza;
+
+    public function __construct(Pizza $pizza) {
+        $this->pizza = $pizza;
+    }
+
+    public function getDesc(): string {
+        return $this->pizza->getDesc();
+    }
+
+    public function cost(): float {
+        return $this->pizza->cost();
+    }
+}
+
+// Concrete Decorator
+class ExtraCheese extends PizzaToppings {
+
+    public function getDesc(): string {
+        return parent::getDesc() . "Extra Cheese ";
+    }
+
+    public function cost(): float {
+        return parent::cost() + 40;
+    }
+}
+
+class Jalapeno extends PizzaToppings {
+
+    public function getDesc(): string {
+        return parent::getDesc() . "Jalapeno ";
+    }
+
+    public function cost(): float {
+        return parent::cost() + 20;
+    }
+}
+
+
+/**
+ * @param Pizza $pizza
+ */
+function makePizza(Pizza $pizza) {
+    echo "Your Order: " . $pizza->getDesc() . "\n";
+    echo "Price to Pay Rs:" . $pizza->cost();
+}
+
+$pizza = new Margherita();
+$pizza = new ExtraCheese($pizza);
+$pizza = new Jalapeno($pizza);
+
+makePizza($pizza);
