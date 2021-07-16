@@ -19,7 +19,7 @@ class ListItem extends Component {
   }
 
   checkItem = () => {
-    const completedAt = new Date().toLocaleString()
+    const completedAt = new Date().toLocaleString('en-US')
     client.checkItem(this.state.item._id, completedAt)
       .then(() => {
         this.setState({ item: { ...this.state.item, complete: true, completedAt } })

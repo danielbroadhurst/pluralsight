@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Client from '../client'
 import './to-do-list.css'
 import ListItem from './list-item'
-// import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 class ToDoList extends Component {
   constructor(props) {
@@ -84,7 +84,7 @@ class ToDoList extends Component {
         <div className="list-header">
           {this.renderListName()}
         </div>
-        {/* <Link to='/' className="link-home">all lists</Link> */}
+         <Link to='/' className="link-home">all lists</Link> 
         <div>
           <ul className="list-items">
             {this.renderListItems()}

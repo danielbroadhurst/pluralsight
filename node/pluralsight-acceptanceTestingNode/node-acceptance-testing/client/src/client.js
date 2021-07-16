@@ -5,8 +5,10 @@ function authenticateUser() {
   return axios.post('/api/auth', { userId: config.defaultUserId }).then(res => res.data)
 }
 
-function getList() {
-  return axios.get('/api/list')
+function getList(listId) {
+  let url = '/api/list'
+  if (listId) url += `/${listId}`
+  return axios.get(url)
     .then(res => {
       if (!res.data)
         return createList()
@@ -14,8 +16,15 @@ function getList() {
     })
 }
 
-function createList() {
-  return axios.post('/api/createList').then(res => {
+function getLists() {
+  return axios.get('/api/lists')
+  .then(res => {
+    return res.data
+  })
+}
+
+function createList(name) {
+  return axios.post('/api/createList', {name}).then(res => {
     return axios.get('/api/list').then(res => res.data)
   })
 }
@@ -38,4 +47,4 @@ function uncheckItem(itemId) {
   return axios.put('/api/uncheckItem', { itemId })
 }
 
-export default { authenticateUser, getList, checkItem, uncheckItem, addItem, removeItem }
+export default { authenticateUser, getList, createList, getLists, checkItem, uncheckItem, addItem, removeItem }

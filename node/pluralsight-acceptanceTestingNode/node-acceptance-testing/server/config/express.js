@@ -14,6 +14,5 @@ module.exports = function(app, config) {
 
     app.listen(app.get('port'), function () {
         console.log("Listening on port %s...", app.get('port'))
-        if (process.send) process.send('service_started') // this event is used in acceptance tests when running locally.
     })
 }

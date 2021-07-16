@@ -14,11 +14,20 @@ router.post('/auth', (req, res) => {
 })
 
 router.get('/list', (req, res) => {
-  return toDoListFacade.getDefaultToDoList(req.userId).then(vm => res.json(vm))
+  return toDoListFacade.getList(req.userId).then(vm => res.json(vm))
+})
+
+router.get('/list/:listId', (req, res) => {
+  return toDoListFacade.getList(req.userId, req.params.listId).then(vm => res.json(vm))
+})
+
+router.get('/lists', (req, res) => {
+  console.log(req.userId);
+  return toDoListFacade.getListsForUser(req.userId).then(vm => res.json(vm))
 })
 
 router.post('/createList', (req, res) => {
-  return toDoListFacade.createList(req.userId).then(vm => res.json(vm))
+  return toDoListFacade.createList(req.userId, req.body.name).then(vm => res.json(vm))
 })
 
 router.post('/addItem', (req, res) => {
@@ -38,6 +47,10 @@ router.put('/checkItem', (req,res) => {
 router.put('/uncheckItem', (req,res) => {
   const itemId = req.body.itemId
   return toDoListFacade.uncheckItem(itemId).then(() => res.status(200).end())
+})
+
+router.delete('/deleteList/:listId', (req,res) => {
+    return toDoListFacade.deleteList(req.userId, req.params.listId).then(() => res.status(200).end())
 })
 
 module.exports = router

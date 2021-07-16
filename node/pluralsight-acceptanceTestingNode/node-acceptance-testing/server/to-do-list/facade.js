@@ -3,12 +3,16 @@
 const toDoListRepository = require('./repository')
 
 module.exports = {
-  getDefaultToDoList(userId) {
-    return toDoListRepository.getList(userId)
+  getList(userId, listId) {
+    return toDoListRepository.getList(userId, listId)
   },
 
-  createList(userId) {
-    return toDoListRepository.createEmptyList(userId, 'Default')
+  getListsForUser(userId){
+    return toDoListRepository.getListsForUser(userId)
+  },
+  
+  createList(userId, listName = 'Default') {
+    return toDoListRepository.createEmptyList(userId, listName)
   },
 
   checkItem(itemId, completedAt) {
@@ -26,5 +30,9 @@ module.exports = {
 
   removeItem(userId, listId, itemId) {
     return toDoListRepository.removeItem(userId, listId, itemId)
+  },
+
+  deleteList(userId, listId) {
+    return toDoListRepository.deleteList(userId, listId)
   }
 }

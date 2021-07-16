@@ -22,6 +22,7 @@ class ToDoListSelector extends Component {
   getLists = () => {
     client.getLists()
       .then((userLists) => {
+        console.log(userLists);
         this.setState({
           lists: userLists.lists
         })
