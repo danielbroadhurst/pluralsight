@@ -1,0 +1,10 @@
+
+
+aws ec2 describe-instances --query "Reservations[].Instances[?InstanceId=='i-0d3693c9ed0dbff20'].State.Name" --output text
+
+aws ec2 stop-instances --instance-ids i-0d3693c9ed0dbff20
+
+while true;aws ec2 describe-instances --query "Reservations[].Instances[?InstanceId=='i-0d3693c9ed0dbff20'].State.Name" --output text;done
+
+
+

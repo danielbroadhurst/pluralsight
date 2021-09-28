@@ -1,0 +1,10 @@
+#Ensure your EC2 instance role/profile has the appropriate permissions, using the Amazon managed policy: CloudWatchAgentServerPolicy
+#Install the CloudWatch Agent and related tools
+sudo yum install amazon-cloudwatch-agent -y
+sudo amazon-linux-extras install collectd -y
+
+#Run the config wizard
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+
+#Run the ctl utility to tell CloudWatch Agent to use your config and start up the service
+sudo amazon-cloudwatch-agent-ctl -a fetch-config -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json -s

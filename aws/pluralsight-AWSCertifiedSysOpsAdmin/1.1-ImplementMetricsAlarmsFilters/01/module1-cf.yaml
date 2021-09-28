@@ -1,0 +1,87 @@
+# Use public Systems Manager Parameter to detect the latest available AMI ID
+Parameters:
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  VpcId:
+    Description: Choose the Default VPC from the list box if you don't have another to use
+    Type: 'AWS::EC2::VPC::Id'
+  KeyName:
+    Description: The EC2 Launch Key Pair to use. If you have not created one yet, you may want to go do that first.
+    Default: wes2021
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  InstanceType:
+    Description: Input t2.micro for AWS Free Tier (t3.micro for regions that do not have t2)
+    Default: t3.nano
+    Type: String
+
+Resources:
+  InstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    DeletionPolicy: Delete
+    Properties:
+      GroupName: 'mywebserver-sg'
+      GroupDescription: Enable SSH and HTTP access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: '0.0.0.0/0'
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
+      VpcId: !Ref VpcId
+  CloudWatchAgentServerRole:
+    Type: 'AWS::IAM::Role'
+    DeletionPolicy: Delete
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy'
+      Path: /
+  CloudWatchAgentServerInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    DeletionPolicy: Delete
+    Properties:
+      Path: /
+      Roles:
+        - !Ref CloudWatchAgentServerRole
+  Instance:
+    Type: 'AWS::EC2::Instance'
+    DeletionPolicy: Delete
+    Properties:
+      IamInstanceProfile: !Ref CloudWatchAgentServerInstanceProfile
+      ImageId: !Ref LatestAmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: 'mywebserver1'
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+        #- Fn::GetAtt: [ InstanceSecurityGroup, GroupId ]
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum install polkit -y
+          yum install httpd amazon-cloudwatch-agent -y
+          amazon-linux-extras install collectd -y
+          systemctl start httpd
+          systemctl enable httpd
+          curl http://localhost/icons/apache_pb2.gif --output -
+          curl http://localhost
+          curl http://localhost/notfound
+          amazon-linux-extras install epel -y
+          yum install stress-ng -y
+          #/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json
