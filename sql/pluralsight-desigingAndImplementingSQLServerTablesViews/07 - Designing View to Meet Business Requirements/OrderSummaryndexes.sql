@@ -8,11 +8,11 @@ AS
     SELECT 
         o.OrderID,
         o.OrderDate,
-        IIF(o.OrderIsExpedited = 1, 'YES', 'NO') AS Expedited, -- Comment
-        -- o.OrderIsExpedited,   -- Add
+        -- IIF(o.OrderIsExpedited = 1, 'YES', 'NO') AS Expedited, -- Comment
+        o.OrderIsExpedited,   -- Add
         c.CustName, 
         SUM(i.Quantity) TotalQuantity
-        -- ,COUNT_BIG(*) AS cb      -- Add
+        ,COUNT_BIG(*) AS cb      -- Add
 
     FROM Orders.Orders o
     JOIN Orders.Customers c 
