@@ -1,0 +1,62 @@
+! TRANSIT-CSR CONFIG
+!
+! --------------------------------------------------------------------------------
+! IPSec Tunnel #10 to Charleston
+! --------------------------------------------------------------------------------
+!
+! Change all occurrences of 24.96.154.172 to YOUR on-prem router's public IP
+!
+crypto isakmp policy 200
+  encryption aes 128
+  authentication pre-share
+  group 2
+  lifetime 28800
+  hash sha
+exit
+crypto keyring keyring-transit-chs
+	local-address 10.3.0.10
+  pre-shared-key address 24.96.154.172 key 5upre_Secre7_kEey_
+exit
+
+crypto isakmp profile isakmp-transit-chs
+  local-address 10.3.0.10
+  match identity address 24.96.154.172
+  keyring keyring-transit-chs
+exit
+
+crypto ipsec transform-set ipsec-prop-transit-chs esp-aes 128 esp-sha-hmac
+  mode tunnel
+exit
+
+crypto ipsec profile ipsec-transit-chs
+  set pfs group2
+  set security-association lifetime seconds 3600
+  set transform-set ipsec-prop-transit-chs
+exit
+
+
+interface Tunnel10
+  ip address 192.168.168.1 255.255.255.252
+  ip virtual-reassembly
+  tunnel source 10.3.0.10
+  tunnel destination 24.96.154.172
+  tunnel mode ipsec ipv4
+  tunnel protection ipsec profile ipsec-transit-chs
+  ip tcp adjust-mss 1379
+  no shutdown
+exit
+
+router bgp 65000
+  neighbor 192.168.168.2 remote-as 65000
+  neighbor 192.168.168.2 activate
+  neighbor 192.168.168.2 timers 10 30 30
+  address-family ipv4 unicast
+    neighbor 192.168.168.2 remote-as 65000
+    neighbor 192.168.168.2 timers 10 30 30
+    neighbor 192.168.168.2 default-originate
+    neighbor 192.168.168.2 activate
+    neighbor 192.168.168.2 soft-reconfiguration inbound
+	network 0.0.0.0
+	redistribute connected
+  exit
+exit
